@@ -18,12 +18,12 @@ When(/^I login with (\w+) and (.+)$/, async (username, password) => {
 Then(/^I should see a text saying (.*)$/, async (message) => {
   if (message == "Error!") {
     // invalid username or password
-    await expect($("//h1[normalize-space()='Accounts Overview']")).toBeExisting();
-    await expect($("//h1[normalize-space()='Accounts Overview']")).toHaveTextContaining(message);
+    await expect($(".title")).toBeExisting();
+    await expect($(".title")).toHaveTextContaining(message);
   } else {
     // valid username or password
-    await expect($("//h1[normalize-space()='Error!']")).toBeExisting();
-    await expect($("//h1[normalize-space()='Error!']")).toHaveTextContaining(message);
+    await expect($(".title")).toBeExisting();
+    await expect($(".title")).toHaveTextContaining(message);
   }
 });
 
