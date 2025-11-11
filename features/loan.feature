@@ -5,7 +5,7 @@ Feature: ParaBank Loan Request Feature
     When I login with john and demo
 
   Scenario Outline: As a user, I can request a loan
-    Given I am on the Loan Request page
+    Given I am on the loan page
     When I request a loan with amount <amount>, down payment <downPayment, and account id <accountId>
     Then I should see a message saying <message> wtih the status <status>
 
