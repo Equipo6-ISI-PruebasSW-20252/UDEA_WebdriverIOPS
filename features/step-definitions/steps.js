@@ -1,4 +1,4 @@
-import { Given, When, Then } from "@wdio/cucumber-framework";
+import { Given, When, Then, beforeScenario } from "@wdio/cucumber-framework";
 
 import LoginPage from '../pageobjects/login.page.js';
 import RequestLoanPage from '../pageobjects/loan.page.js';
@@ -7,6 +7,15 @@ const pages = {
   login: LoginPage,
   loan: RequestLoanPage
 };
+
+beforeScenario(async () => {
+  // check if user is logged in and log out
+  const logoutButton = await $("//a[normalize-space()='Log Out']"); // adjust selector as needed
+  if (await logoutButton.isExisting()) {
+    await logoutButton.click();
+  }
+});
+
 
 Given(/^I am on the (\w+) page$/, async (page) => {
   await pages[page].open();
