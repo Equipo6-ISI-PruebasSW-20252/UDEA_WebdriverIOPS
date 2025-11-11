@@ -9,3 +9,8 @@ Feature: Para Bank Login Feature
       | username          | password | message           |
       | invalidUsenam   | password | Error!            |
       | john        | demo | Acounts Overview |
+
+  Scenario: As a user, I cannot log into the Parabank Accounts Service Page with empty credentials
+    Given I am on the login page
+    When I login with "" and ""
+    Then I should not be able to click the login button
