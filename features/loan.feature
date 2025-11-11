@@ -1,8 +1,8 @@
 Feature: ParaBank Loan Request Feature
   
-#   Background:
-#     Given I am on the login page
-#     When I login with john and demo
+  Background:
+    Given I am on the login page
+    When I login with john and demo
 
   Scenario Outline: As a user, I can request a loan
     Given I am on the Loan Request page
