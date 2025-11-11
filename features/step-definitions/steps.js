@@ -53,7 +53,7 @@ When(/^I request a loan with amount (\d+), down payment (\d+), and account id (\
   await RequestLoanPage.requestLoan(amount, downPayment, accountId);
 });
 
-Then(/^I should see a message saying (.*) with the status (.*)$/, async (message, status) => {
+Then(/^I should see a message saying (\w+) with the status (\w+)$/, async (message, status) => {
   let messageElement;
   if (status === "Approved") {
     messageElement = await $("//p[normalize-space()='Congratulations, your loan has been approved.']");
