@@ -8,9 +8,9 @@ Feature: Para Bank Login Feature
     Examples: 
       | username          | password | message           |
       | invalidUsenam   | password | Error!            |
-      | john        | demo | Acounts Overview |
+      | john        | demo | Accounts Overview |
 
   Scenario: As a user, I cannot log into the Parabank Accounts Service Page with empty credentials
     Given I am on the login page
-    When I login with "" and ""
+    When I write the credentials "" and ""
     Then I should not be able to click the login button

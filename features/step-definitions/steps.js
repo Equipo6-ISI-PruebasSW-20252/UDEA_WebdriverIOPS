@@ -15,6 +15,10 @@ When(/^I login with (\w+) and (.+)$/, async (username, password) => {
   await LoginPage.login(username, password);
 });
 
+When(/^I write the credentials (.*) and (.*)$/, async (username, password) => {
+  await LoginPage.putValues(username, password);
+});
+
 Then(/^I should see a text saying (.*)$/, async (message) => {
   if (message == "Error!") {
     // invalid username or password
