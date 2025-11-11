@@ -11,6 +11,6 @@ Feature: ParaBank Loan Request Feature
 
     Examples:
       | accountId | amount | downPayment | message                                      | status   |
-      | 13344     | 5000   | 100        | Congratulations, your loan has been approved.    | Approved |
+      | 13344     | 500   | 50        | Congratulations, your loan has been approved.    | Approved |
       | 13344     | 10000000000  | 100        | We cannot grant a loan in that amount with your available funds.    | Denied   |
 
