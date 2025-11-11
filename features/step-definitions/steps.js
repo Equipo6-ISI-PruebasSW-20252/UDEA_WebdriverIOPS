@@ -1,9 +1,11 @@
 import { Given, When, Then } from "@wdio/cucumber-framework";
 
 import LoginPage from '../pageobjects/login.page.js';
+import RequestLoanPage from '../pageobjects/loan.page.js';
 
 const pages = {
   login: LoginPage,
+  loan: RequestLoanPage
 };
 
 Given(/^I am on the (\w+) page$/, async (page) => {
@@ -34,4 +36,24 @@ Then(/^I should see a text saying (.*)$/, async (message) => {
 Then(/^I should not be able to click the login button$/, async () => {
   const loginButton = await LoginPage.loginButton;
   await expect(loginButton).toBeDisabled();
+});
+
+//LOAN REQUEST
+When(/^I request a loan with amount (\d+), down payment (\d+), and account id (\d+)$/, 
+  async (amount, downPayment, accountId) => {
+  await RequestLoanPage.requestLoan(amount, downPayment, accountId);
+});
+
+Then(/^I should see a message saying (.*) with the status (.*)$/, async (message, status) => {
+  let messageElement;
+  if (status === "Approved") {
+    messageElement = await $("//p[normalize-space()='Congratulations, your loan has been approved.']");
+  } else {
+    messageElement = await $("//p[contains(text(),'We cannot grant a loan in that amount with your av')]");
+  }
+  const statusElement = await $("//td[@id='loanStatus']");
+  await expect(statusElement).toBeExisting();
+  await expect(statusElement).toHaveTextContaining(status);
+  await expect(messageElement).toBeExisting();
+  await expect(messageElement).toHaveTextContaining(message);
 });
