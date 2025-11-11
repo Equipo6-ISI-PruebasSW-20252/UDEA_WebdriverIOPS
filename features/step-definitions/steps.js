@@ -56,9 +56,9 @@ When(/^I request a loan with amount (\d+), down payment (\d+), and account id (\
 Then(/^I should see a message saying (\w+) with the status (\w+)$/, async (message, status) => {
   let messageElement;
   if (status === "Approved") {
-    messageElement = await $("//p[normalize-space()='Congratulations, your loan has been approved.']");
+    messageElement = await $("div[id='loanRequestApproved'] p:nth-child(1)");
   } else {
-    messageElement = await $("//p[contains(text(),'We cannot grant a loan in that amount with your av')]");
+    messageElement = await $("div[id='loanRequestDenied'] p[class='error']");
   }
   const statusElement = await $("//td[@id='loanStatus']");
   await expect(statusElement).toBeExisting();
