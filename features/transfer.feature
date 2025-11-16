@@ -7,7 +7,7 @@ Background:
 Scenario Outline: As a user, I can attempt to transfer money from one account to another
     Given I am on the transfer funds page
     When I transfer <amount> from account <originAccount> to account <destinationAccount>
-    Then I should see a message saying <message>>
+    Then I should see a message saying <message>
 
 Examples:
       | originAccount | destinationAccount | amount | message            |
