@@ -2,10 +2,12 @@ import { Given, When, Then, Before } from "@wdio/cucumber-framework";
 
 import LoginPage from '../pageobjects/login.page.js';
 import RequestLoanPage from '../pageobjects/loan.page.js';
+import TransferFundsPage from '../pageobjects/transfer.page.js';
 
 const pages = {
   login: LoginPage,
-  loan: RequestLoanPage
+  loan: RequestLoanPage,
+  transfer: TransferFundsPage
 };
 
 Before(async () => {
@@ -66,3 +68,22 @@ Then(/^I should see a message saying (.*) with the status (.*)$/, async (message
   await expect(messageElement).toBeExisting();
   await expect(messageElement).toHaveTextContaining(message);
 });
+
+//TRANSFER FUNDS
+
+When(/^I transfer (\d+) from account (\d+) to account (\d+)$/,
+  async (amount, originAccount, destinationAccount) => {
+  await TransferFundsPage.transfer(amount, originAccount, destinationAccount);
+  }
+);
+
+Then(/^I should see a message saying (.*)$/, async (message) => {
+    if (message === "Error!") {
+        await expect(TransferFundsPage.errorMessage).toBeExisting();
+        await expect(TransferFundsPage.errorMessage).toHaveTextContaining(message);
+    } else {
+        await expect(TransferFundsPage.successMessage).toBeExisting();
+        await expect(TransferFundsPage.successMessage).toHaveTextContaining(message);
+    }
+});
+
