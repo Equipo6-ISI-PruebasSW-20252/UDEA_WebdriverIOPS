@@ -23,6 +23,15 @@ class TransferFundsPage extends Page {
         return $("//input[@value='Transfer']");
     }
 
+    get successMessage() {
+    return $("//h1[normalize-space()='Transfer Complete!']");
+    }
+
+    get errorMessage() {
+    return $("//h1[normalize-space()='Error!']");
+    }
+
+
     /**
      * Method
      */
