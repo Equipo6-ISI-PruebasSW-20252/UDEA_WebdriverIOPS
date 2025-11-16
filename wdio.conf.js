@@ -23,8 +23,9 @@ export const config = {
     // will be called from there.
     //
     specs: [
+        './features/**/login.feature',
         './features/**/loan.feature',
-        './features/**/login.feature'
+        './features/**/transfer.feature'
     ],
     // Patterns to exclude.
     exclude: [
