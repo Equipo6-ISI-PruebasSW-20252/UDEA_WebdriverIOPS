@@ -11,8 +11,7 @@ Scenario Outline: As a user, I can attempt to transfer money from one account to
 
 Examples:
       | originAccount | destinationAccount | amount | message            |
-      | 13344         | 13566              | 100    | Transfer Complete! |
-      | 13677         | 16341              | 50     | Transfer Complete! |
-      | 16008         | 17007              | 999999 | Insufficient funds |      
+      | 13566         | 16341              | 100    | Transfer Complete! |
+      | 16119         | 16452              | 999999 | Insufficient funds |      
 
 
