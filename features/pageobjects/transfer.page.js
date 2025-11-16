@@ -46,7 +46,7 @@ class TransferFundsPage extends Page {
      * Open Transfer Funds page
      */
     open() {
-        return super.open('transfer');
+        return super.open('transfer.htm');
     }
 }
 
