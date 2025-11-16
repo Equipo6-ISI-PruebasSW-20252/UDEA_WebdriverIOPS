@@ -38,7 +38,7 @@ class LoanRequestPage extends Page {
      * overwrite specific options to adapt it to page object
      */
     open () {
-        return super.open('requestloan');
+        return super.open('requestloan.htm');
     }
 }
 
