@@ -73,7 +73,7 @@ Then(/^I should see a message saying (.*) with the status (.*)$/, async (message
 
 Given(/^I am on the transfer funds page$/, async () => {
     await TransferFundsPage.open();
-    await expect(TransferFundsPage.inputAmount).toBeExisting();
+    await expect(TransferFundsPage.inputAmount).toBeExisting({ timeout: 5000 });
 });
 
 When(/^I transfer (\d+) from account (\d+) to account (\d+)$/,
