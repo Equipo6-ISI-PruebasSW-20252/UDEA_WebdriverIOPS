@@ -1,5 +1,5 @@
-import { mkdirSync } from "fs";
-import { join } from "path";
+import { mkdirSync, readdirSync, readFileSync, writeFileSync, unlinkSync } from "fs";
+import { join, resolve } from "path";
 
 export const config = {
   //
@@ -179,7 +179,7 @@ export const config = {
     tagExpression: "",
     // <number> timeout for step definitions
     timeout: 60000,
-    format: ["json:./reports/cucumber-report.json"],
+    format: [`json:./reports/cucumber-report-worker-${process.pid}.json`],
     // <boolean> Enable this config to treat undefined definitions as warnings.
     ignoreUndefinedDefinitions: false,
   },
@@ -200,6 +200,17 @@ export const config = {
   onPrepare: function () {
     mkdirSync("./reports", { recursive: true });
     mkdirSync("./errorShots", { recursive: true });
+    // Limpiar reportes anteriores
+    try {
+      const files = readdirSync("./reports");
+      files.forEach((file) => {
+        if (file.startsWith("cucumber-report") && file.endsWith(".json")) {
+          unlinkSync(join("./reports", file));
+        }
+      });
+    } catch (err) {
+      // Ignorar errores
+    }
   },
   /**
    * Gets executed before a worker process is spawned and can be used to initialise specific service
@@ -349,8 +360,52 @@ export const config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {<Object>} results object containing test results
    */
-  // onComplete: function(exitCode, config, capabilities, results) {
-  // },
+  onComplete: function(exitCode, config, capabilities, results) {
+    // Consolidar reportes JSON de Cucumber cuando se ejecuta en paralelo
+    const reportsDir = resolve("./reports");
+    try {
+      const files = readdirSync(reportsDir);
+      const jsonReports = files.filter((f) => f.startsWith("cucumber-report") && f.endsWith(".json") && f !== "cucumber-report.json");
+      
+      if (jsonReports.length > 0) {
+        // Hay múltiples reportes, consolidarlos
+        const allFeatures = [];
+        jsonReports.forEach((file) => {
+          try {
+            const content = readFileSync(join(reportsDir, file), "utf-8");
+            const data = JSON.parse(content);
+            const features = Array.isArray(data) ? data : [data];
+            allFeatures.push(...features);
+          } catch (err) {
+            console.warn(`Error leyendo ${file}:`, err.message);
+          }
+        });
+        
+        // Escribir el reporte consolidado
+        writeFileSync(
+          join(reportsDir, "cucumber-report.json"),
+          JSON.stringify(allFeatures, null, 2),
+          "utf-8"
+        );
+        
+        console.log(`✅ Consolidados ${jsonReports.length} reportes en cucumber-report.json con ${allFeatures.length} features`);
+        
+        // Limpiar reportes temporales
+        jsonReports.forEach((file) => {
+          try {
+            unlinkSync(join(reportsDir, file));
+          } catch (err) {
+            // Ignorar errores al eliminar
+          }
+        });
+      } else if (jsonReports.length === 0 && files.includes("cucumber-report.json")) {
+        // Solo hay un reporte, ya está consolidado
+        console.log("✅ Reporte único encontrado, no se requiere consolidación");
+      }
+    } catch (err) {
+      console.warn("Error consolidando reportes:", err.message);
+    }
+  },
   /**
    * Gets executed when a refresh happens.
    * @param {String} oldSessionId session ID of the old session
