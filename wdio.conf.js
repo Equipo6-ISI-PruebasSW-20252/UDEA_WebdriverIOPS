@@ -1,3 +1,6 @@
+import { mkdirSync } from "fs";
+import { join } from "path";
+
 export const config = {
   //
   // ====================
@@ -24,6 +27,7 @@ export const config = {
   //
   specs: [
     "./features/**/login.feature",
+    "./features/**/accounts.feature",
     "./features/**/loan.feature",
     "./features/**/transfer.feature",
     "./features/**/bill-pay.feature",
@@ -63,6 +67,18 @@ export const config = {
       //
       browserName: "chrome",
       acceptInsecureCerts: true,
+      "goog:chromeOptions": {
+        args: process.env.CI
+          ? [
+              "headless",
+              "disable-gpu",
+              "no-sandbox",
+              "disable-dev-shm-usage",
+              "disable-setuid-sandbox",
+              "window-size=1920,1080",
+            ]
+          : ["window-size=1920,1080"],
+      },
       // If outputDir is provided WebdriverIO can capture driver session logs
       // it is possible to configure which logTypes to include/exclude.
       // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
@@ -116,7 +132,7 @@ export const config = {
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-  services: ["chromedriver"],
+  services: [],
 
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
@@ -163,6 +179,7 @@ export const config = {
     tagExpression: "",
     // <number> timeout for step definitions
     timeout: 60000,
+    format: ["json:./reports/cucumber-report.json"],
     // <boolean> Enable this config to treat undefined definitions as warnings.
     ignoreUndefinedDefinitions: false,
   },
@@ -180,8 +197,10 @@ export const config = {
    * @param {Object} config wdio configuration object
    * @param {Array.<Object>} capabilities list of capabilities details
    */
-  // onPrepare: function (config, capabilities) {
-  // },
+  onPrepare: function () {
+    mkdirSync("./reports", { recursive: true });
+    mkdirSync("./errorShots", { recursive: true });
+  },
   /**
    * Gets executed before a worker process is spawned and can be used to initialise specific service
    * for that worker as well as modify runtime environments in an async fashion.
@@ -265,8 +284,16 @@ export const config = {
    * @param {number}             result.duration  duration of scenario in milliseconds
    * @param {Object}             context          Cucumber World object
    */
-  // afterStep: function (step, scenario, result, context) {
-  // },
+  afterStep: async function (_step, scenario, result) {
+    if (!result.passed) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const scenarioLabel =
+        scenario?.name || scenario?.pickle?.name || "failed-step";
+      const scenarioName = scenarioLabel.replace(/\s+/g, "_");
+      const fileName = `${scenarioName}-${timestamp}.png`;
+      await browser.saveScreenshot(join("errorShots", fileName));
+    }
+  },
   /**
    *
    * Runs after a Cucumber Scenario.

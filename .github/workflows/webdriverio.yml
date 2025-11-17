@@ -1,27 +1,65 @@
-# .github/workflows/node-ci.yml
-
-name: Node.js CI
+name: WebdriverIO CI
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build:
-    runs-on: windows-latest
+  test:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '16'
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install Chrome and ChromeDriver
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+          check-latest: true
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
 
       - name: Run WebdriverIO tests
-        run: npx wdio ./wdio.conf.js
+        id: wdio
+        continue-on-error: true
+        env:
+          CI: true
+        run: pnpm run wdio
+
+      - name: Summarize Feature Results
+        if: always()
+        run: |
+          node ./scripts/ci-summary.mjs > ci-summary.md
+          SUMMARY_EXIT=$?
+          cat ci-summary.md >> $GITHUB_STEP_SUMMARY
+          cat ci-summary.md
+          if [ $SUMMARY_EXIT -ne 0 ]; then
+            exit $SUMMARY_EXIT
+          fi
+
+      - name: Upload reports and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: webdriverio-artifacts
+          path: |
+            reports/**
+            errorShots/**
+          if-no-files-found: warn

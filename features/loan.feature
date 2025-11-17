@@ -7,7 +7,8 @@ Feature: ParaBank Loan Request Feature
   Scenario Outline: As a user, I can request a loan
     Given I am on the loan page
     When I request a loan with amount <amount>, down payment <downPayment>, and account id <accountId>
-    Then I should see a message saying <message> with the status <status>
+    Then I should see the loan status <status>
+    And I should see the loan message <message>
 
     Examples:
       | accountId | amount | downPayment | message                                      | status   |

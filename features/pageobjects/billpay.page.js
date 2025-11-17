@@ -1,3 +1,4 @@
+import fetch from "node-fetch";
 import Page from "./page.js";
 
 class BillPayApiPage extends Page {
